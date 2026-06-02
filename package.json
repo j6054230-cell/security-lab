@@ -1,17 +1,17 @@
 {
-  "name": "express-todo-api-ci",
+  "name": "my-app",
   "version": "1.0.0",
-  "description": "CI/CD uchun Express Todo API test loyihasi",
-  "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "test": "jest --runInBand --detectOpenHandles"
+    "start": "node app.js",
+    "test": "jest"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "4.17.1",  ← eski versiya
+    "lodash": "4.17.15",  ← zaiflik bor
+    "axios": "0.21.1"   ← zaiflik bor
   },
   "devDependencies": {
-    "jest": "^29.7.0",
-    "supertest": "^7.0.0"
+    "jest": "27.0.0"
   }
 }
+
