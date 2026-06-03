@@ -2,6 +2,6 @@
   "name": "frontend",
   "dependencies": {
     "express": "5.2.1",
-    "dotenv": "16.4.5"
+    "dotenv": "17.4.2"
   }
 }
