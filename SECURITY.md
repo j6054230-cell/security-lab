@@ -18,4 +18,5 @@
 ## Qo'llanilmaydi
 - Social engineering hujumlar
 - Fizik hujumlar
+ 
 

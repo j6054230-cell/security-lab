@@ -7,11 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with: { python-version: '3.11' }
       - name: Bandit and pip-audit
         run: |
           pip install bandit pip-audit
+          # Bandit va pip-audit backend papkasini tekshiradi
           bandit -r ./backend -ll || true
           pip-audit -r ./backend/requirements.txt || true
 
@@ -20,12 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: 
-          node-version: '20'
-      
-      # MUHIM: Bu qator 'npm' buyruqlari aynan qaysi papkada
-      # bajarilishini belgilaydi.
-      - name: Install dependencies and scan
+        with: { node-version: '20' }
+      - name: NPM Audit
+        # ENG MUHIM QISM: buyruqlarni frontend papkasi ichida bajaradi
         working-directory: ./frontend
         run: |
           npm install
