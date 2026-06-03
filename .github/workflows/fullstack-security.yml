@@ -31,5 +31,9 @@ jobs:
   deploy:
     needs: [scan-python, scan-node]
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
-      - run: echo "🚀 Deploying successfully!"
+      - name: Deploy Simulation
+        run: |
+          echo "✅ Security scan passed!"
+          echo "🚀 Deploying to production..."
