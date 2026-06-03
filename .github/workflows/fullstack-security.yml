@@ -20,9 +20,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '20' }
-      - name: NPM Audit
-        # Ishchi katalog frontend ekanligini bildiramiz
+        with: 
+          node-version: '20'
+      
+      # MUHIM: Bu qator 'npm' buyruqlari aynan qaysi papkada
+      # bajarilishini belgilaydi.
+      - name: Install dependencies and scan
         working-directory: ./frontend
         run: |
           npm install
