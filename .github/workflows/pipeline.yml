@@ -1,6 +1,5 @@
 name: CI/CD Pipeline
 
-# 3-tamoyil: GITHUB_TOKEN uchun minimal ruxsatlar
 permissions:
   contents: read
 
@@ -18,13 +17,23 @@ jobs:
         working-directory: ./frontend
     steps:
       - name: Checkout code
-        # Immutable Action (SHA orqali)
-        uses: actions/checkout@692973e3d9371296bf4051010375179853907409 
-      
+        uses: actions/checkout@692973e3d9371296bf4051010375179853907409
+        with:
+          fetch-depth: 1 # Tezkor checkout
+
       - name: Setup Node.js
         uses: actions/setup-node@1e60f6205b5464e83c7908b896f1345d3e09156a
         with:
           node-version: '20'
+
+      # Caching orqali o'rnatish tezligini oshirish
+      - name: Cache node modules
+        uses: actions/cache@0c45773b623bea8c85750d4d29315d0506385d30
+        with:
+          path: ./frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('./frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm install
@@ -32,7 +41,6 @@ jobs:
       - name: Run Tests
         run: npm test
 
-  # 5-tamoyil: SAST (CodeQL) - Kod xavfsizligini skanerlash
   security-scan:
     needs: build-and-test
     runs-on: ubuntu-latest
