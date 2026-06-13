@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [ main ]
 
-# Minimal ruxsatlar (Least Privilege)
 permissions:
   contents: read
 
@@ -15,12 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        # Immutable Action SHA
-        uses: actions/checkout@692973e3d9371296bf4051010375179853907409 
+        uses: actions/checkout@v4
       
       - name: Setup Node.js
-        # Immutable Action SHA
-        uses: actions/setup-node@1e60f6205b5464e83c7908b896f1345d3e09156a
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
@@ -36,10 +33,10 @@ jobs:
     permissions:
       security-events: write
     steps:
-      - uses: actions/checkout@692973e3d9371296bf4051010375179853907409
+      - uses: actions/checkout@v4
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@b6a47833a6932463e76a6e2e5050f55cf6a67f1b
+        uses: github/codeql-action/init@v3
         with:
           languages: javascript
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@b6a47833a6932463e76a6e2e5050f55cf6a67f1b
+        uses: github/codeql-action/analyze@v3
