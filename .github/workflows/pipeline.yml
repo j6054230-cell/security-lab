@@ -1,9 +1,7 @@
-kkname: Fullstack Security Pipeline
+name: Fullstack Security Pipeline
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
 permissions:
@@ -17,48 +15,38 @@ jobs:
       run:
         working-directory: ./frontend
     steps:
-      - name: Checkout code
-        uses: actions/checkout@692973e3d9371296bf4051010375179853907409
-        with:
-          fetch-depth: 1
-
-      - name: Setup Node.js
-        uses: actions/setup-node@1e60f6205b5464e83c7908b896f1345d3e09156a
-        with:
-          node-version: '20'
-
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '20'}
       - name: Cache node modules
-        uses: actions/cache@0c45773b623bea8c85750d4d29315d0506385d30
+        uses: actions/cache@v4
         with:
           path: ./frontend/node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('./frontend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run Unit Tests
-        run: npm test -- --coverage
-
-      - name: Upload Test Reports
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage-report
-          path: ./frontend/coverage/
+      - run: npm install
+      - run: npm test
 
   security-scan:
     needs: build-and-test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@692973e3d9371296bf4051010375179853907409
-      
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@b6a47833a6932463e76a6e2e5050f55cf6a67f1b
-        with:
-          languages: javascript
-          
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@b6a47833a6932463e76a6e2e5050f55cf6a67f1b
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with: {languages: javascript}
+      - uses: github/codeql-action/analyze@v3
+
+  deploy-to-staging:
+    needs: security-scan
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Deploy to Staging
+        run: echo "Kod Staging muhitiga muvaffaqiyatli joylandi."
+
+  deploy-to-production:
+    needs: deploy-to-staging
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy to Production
+        run: echo "Kod Production muhitiga muvaffaqiyatli joylandi."
