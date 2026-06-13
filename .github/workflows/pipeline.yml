@@ -1,0 +1,60 @@
+name: Production-Grade Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # 1. Build va Unit Test (Caching bilan)
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run: {working-directory: ./frontend}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-node@v4
+        with: {node-version: '20'}
+      - name: Cache Node Modules
+        uses: actions/cache@v4
+        with:
+          path: ./frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('./frontend/package-lock.json') }}
+      - run: npm install
+      - run: npm test -- --coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ./frontend/coverage/
+
+  # 2. Xavfsizlik (CodeQL)
+  security-scan:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with: {languages: javascript}
+      - uses: github/codeql-action/analyze@v3
+
+  # 3. Staging Deployment
+  deploy-to-staging:
+    needs: security-scan
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - run: echo "Deploying to Staging..."
+
+  # 4. Production Deployment (Manual Approval bilan)
+  deploy-to-production:
+    needs: deploy-to-staging
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - run: echo "Deploying to Production..."
