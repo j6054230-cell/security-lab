@@ -1,42 +1,51 @@
 name: CI/CD Pipeline
 
+# 3-tamoyil: GITHUB_TOKEN uchun minimal ruxsatlar
+permissions:
+  contents: read
+
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 
-permissions:
-  contents: read
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        # Immutable Action (SHA orqali)
+        uses: actions/checkout@692973e3d9371296bf4051010375179853907409 
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@1e60f6205b5464e83c7908b896f1345d3e09156a
         with:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run Tests
         run: npm test
 
+  # 5-tamoyil: SAST (CodeQL) - Kod xavfsizligini skanerlash
   security-scan:
     needs: build-and-test
     runs-on: ubuntu-latest
     permissions:
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@692973e3d9371296bf4051010375179853907409
+      
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@b6a47833a6932463e76a6e2e5050f55cf6a67f1b
         with:
           languages: javascript
+          
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@b6a47833a6932463e76a6e2e5050f55cf6a67f1b
