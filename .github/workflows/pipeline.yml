@@ -1,13 +1,14 @@
-name: CI/CD Pipeline
-
-permissions:
-  contents: read
+kkname: Fullstack Security Pipeline
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
+permissions:
+  contents: read
+  security-events: write
 
 jobs:
   build-and-test:
@@ -19,14 +20,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@692973e3d9371296bf4051010375179853907409
         with:
-          fetch-depth: 1 # Tezkor checkout
+          fetch-depth: 1
 
       - name: Setup Node.js
         uses: actions/setup-node@1e60f6205b5464e83c7908b896f1345d3e09156a
         with:
           node-version: '20'
 
-      # Caching orqali o'rnatish tezligini oshirish
       - name: Cache node modules
         uses: actions/cache@0c45773b623bea8c85750d4d29315d0506385d30
         with:
@@ -38,14 +38,19 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run Tests
-        run: npm test
+      - name: Run Unit Tests
+        run: npm test -- --coverage
+
+      - name: Upload Test Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: ./frontend/coverage/
 
   security-scan:
     needs: build-and-test
     runs-on: ubuntu-latest
-    permissions:
-      security-events: write
     steps:
       - name: Checkout code
         uses: actions/checkout@692973e3d9371296bf4051010375179853907409
